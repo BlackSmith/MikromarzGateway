@@ -43,9 +43,14 @@ enum tarif {
 };
 
 const unsigned long MM_SERIAL_BAUD = 127659;
-const uint32_t MM_SERIAL_CONFIG = SERIAL_8E1;
-const uint8_t MM_SERIAL_RX_PIN = 16;     //Read channel - USB green wire
-const uint8_t MM_SERIAL_TX_PIN = 17;     //Transmit channel - USB white wire
+const SerialConfig MM_SERIAL_CONFIG = SERIAL_8E1;
+//const uint32_t MM_SERIAL_CONFIG = SERIAL_8E1;
+// const uint8_t MM_SERIAL_RX_PIN = 16;     //Read channel - USB green wire
+// const uint8_t MM_SERIAL_TX_PIN = 17;     //Transmit channel - USB white wire
+
+const uint8_t MM_SERIAL_RX_PIN = 15;     //Read channel - USB green wire
+const uint8_t MM_SERIAL_TX_PIN = 13;     //Transmit channel - USB white wire
+
 
 
 
@@ -53,8 +58,10 @@ class MikromarzMeter
 {
 public:
     MikromarzMeter(meterType type);
+    //void setup(uint8_t rxPin=MM_SERIAL_RX_PIN, uint8_t txPin=MM_SERIAL_TX_PIN, 
+    //           uint32_t config=MM_SERIAL_CONFIG, unsigned long bound=MM_SERIAL_BAUD);
     void setup(uint8_t rxPin=MM_SERIAL_RX_PIN, uint8_t txPin=MM_SERIAL_TX_PIN, 
-               uint32_t config=MM_SERIAL_CONFIG, unsigned long bound=MM_SERIAL_BAUD);
+               SerialConfig config=MM_SERIAL_CONFIG, unsigned long bound=MM_SERIAL_BAUD);
     bool readData();
     uint64_t getPower(byte phase);
     uint64_t getEnergy(byte phase, tarif t=TARIF_HIGHT);

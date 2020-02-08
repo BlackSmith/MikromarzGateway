@@ -4,24 +4,29 @@
 
 byte record[50];  //38 228 0   0 0 0 0 0 0 0 2 0 0 0 2 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0   156 4   # SE1-PM2
 
-byte sizeOfHeader = 2;
+const byte sizeOfHeader = 2;
 
-int matrix[4] = {1, 256, 65536, 16777216}; // 256^index
-byte request[] = {0x0A, 0xE4, 0x00, 0xFF, 0xCE, 0x9F, 0x11, 0x4E, 0x40, 0xAE};
+const int matrix[4] = {1, 256, 65536, 16777216}; // 256^index
+const byte request[] = {0x0A, 0xE4, 0x00, 0xFF, 0xCE, 0x9F, 0x11, 0x4E, 0x40, 0xAE};
 
 MikromarzMeter::MikromarzMeter(meterType type) {
     this->type = type;
 }
 
-void MikromarzMeter::setup(uint8_t rxPin, uint8_t txPin, uint32_t config, unsigned long bound) {
-  Serial1.begin(bound, config, rxPin, -1, true);
-  Serial2.begin(bound, config, -1, txPin);
+//void MikromarzMeter::setup(uint8_t rxPin, uint8_t txPin, uint32_t config, unsigned long bound) {
+void MikromarzMeter::setup(uint8_t rxPin, uint8_t txPin, SerialConfig config, unsigned long bound) {
+    Serial.begin(bound, config);
+    Serial.swap(); 
+ // Serial1.begin(bound, config, rxPin, -1, true);
+ // Serial2.begin(bound, config, -1, txPin);
 }
 
 bool MikromarzMeter::readData() {
     sendRequest();
-    if (Serial1.available() > 0) {
-        byte num = Serial1.readBytes(record, sizeof(record));
+    //if (Serial1.available() > 0) {
+    if (Serial.available() > 0) {
+        //byte num = Serial1.readBytes(record, sizeof(record));
+        byte num = Serial.readBytes(record, sizeof(record));
         if (num == record[0]) {
             return true;
         }
@@ -50,7 +55,8 @@ tarif MikromarzMeter::getTarif() {
 }
 
 void MikromarzMeter::sendRequest() {
-    Serial2.write(request, sizeof(request));
+    //Serial2.write(request, sizeof(request));
+    Serial.write(request, sizeof(request));
     delay(50);
 }
 
