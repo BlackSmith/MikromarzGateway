@@ -3,34 +3,56 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 
-#define WSDR_DEBUG
-// Define where debug output will be printed.
-#define DEBUG_PRINTER Serial
+#define MM_INVERTOR "YES"
 
-// Setup debug printing macros.
-#ifdef WSDR_DEBUG
-#define DEBUG_PRINT(...)                  \
-    {                                     \
-        DEBUG_PRINTER.print(__VA_ARGS__); \
-    }
-#define DEBUG_PRINTLN(...)                  \
-    {                                       \
-        DEBUG_PRINTER.println(__VA_ARGS__); \
-    }
-#define DEBUG_PRINTF(...)                  \
-    {                                      \
-        DEBUG_PRINTER.printf(__VA_ARGS__); \
-    }
-#else
-#define DEBUG_PRINT(...) \
-    {                    \
-    }
-#define DEBUG_PRINTLN(...) \
-    {                      \
-    }
-#define DEBUG_PRINTF(...) \
-    {                     \
-    }
+// Define where debug output will be printed.
+#ifndef DEBUG_PRINTER
+    #define DEBUG_PRINTER Serial
+#endif
+
+#ifndef MM_INPUT_SERIAL
+    #ifdef ESP8266
+        #define MM_INPUT_SERIAL Serial
+    #elif ESP32
+        #define MM_INPUT_SERIAL Serial1
+    #endif
+#endif
+#ifndef OUTPUT_SERIAL
+    #ifdef ESP8266
+        #define MM_OUTPUT_SERIAL Serial
+    #elif ESP32
+        #ifdef MM_INVERTOR
+            #define MM_OUTPUT_SERIAL Serial1
+        #else
+            #define MM_OUTPUT_SERIAL Serial2
+        #endif
+    #endif
+#endif
+
+#ifdef ESP32
+    #define SerialConfig uint32_t
+#endif
+#ifndef MM_SERIAL_BAUD
+    #define MM_SERIAL_BAUD 127659
+#endif
+#ifndef MM_SERIAL_CONFIG
+    #define MM_SERIAL_CONFIG SERIAL_8E1
+#endif
+
+#ifndef MM_SERIAL_RX_PIN        //Read channel - USB green wire
+    #ifdef ESP8266
+        #define MM_SERIAL_RX_PIN 3
+    #elif ESP32
+        #define MM_SERIAL_RX_PIN 16
+    #endif
+#endif
+
+#ifndef MM_SERIAL_TX_PIN        //Transmit channel - USB white wire
+    #ifdef ESP8266
+        #define MM_SERIAL_TX_PIN 1
+    #elif ESP32
+        #define MM_SERIAL_TX_PIN 17
+    #endif
 #endif
 
 enum meterType {
@@ -42,25 +64,11 @@ enum tarif {
     TARIF_HIGHT
 };
 
-const unsigned long MM_SERIAL_BAUD = 127659;
-const SerialConfig MM_SERIAL_CONFIG = SERIAL_8E1;
-//const uint32_t MM_SERIAL_CONFIG = SERIAL_8E1;
-// const uint8_t MM_SERIAL_RX_PIN = 16;     //Read channel - USB green wire
-// const uint8_t MM_SERIAL_TX_PIN = 17;     //Transmit channel - USB white wire
-
-const uint8_t MM_SERIAL_RX_PIN = 15;     //Read channel - USB green wire
-const uint8_t MM_SERIAL_TX_PIN = 13;     //Transmit channel - USB white wire
-
-
-
-
 class MikromarzMeter
 {
 public:
     MikromarzMeter(meterType type);
-    //void setup(uint8_t rxPin=MM_SERIAL_RX_PIN, uint8_t txPin=MM_SERIAL_TX_PIN, 
-    //           uint32_t config=MM_SERIAL_CONFIG, unsigned long bound=MM_SERIAL_BAUD);
-    void setup(uint8_t rxPin=MM_SERIAL_RX_PIN, uint8_t txPin=MM_SERIAL_TX_PIN, 
+    void setup(uint8_t rxPin=MM_SERIAL_RX_PIN, uint8_t txPin=MM_SERIAL_TX_PIN,
                SerialConfig config=MM_SERIAL_CONFIG, unsigned long bound=MM_SERIAL_BAUD);
     bool readData();
     uint64_t getPower(byte phase);

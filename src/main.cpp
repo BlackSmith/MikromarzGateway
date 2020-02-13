@@ -2,36 +2,42 @@
 #include <HardwareSerial.h>
 #include <MikromarzMeter.h>
 
+#ifdef ESP8266
+  #define PRINTER Serial1
+#elif ESP32
+  #define PRINTER Serial
+#endif
+
 MikromarzMeter mm = MikromarzMeter(SE1_PM2);
 
-void setup() {  
+void setup() {
   mm.setup();
-  Serial1.begin(9600, SERIAL_8N1, SERIAL_FULL, 1);
-  Serial1.setDebugOutput(true);
-  Serial1.printf("Configured.");
+  #ifdef ESP8266
+    PRINTER.begin(9600, SERIAL_8N1, SERIAL_FULL, 1);
+  #elif ESP32
+    PRINTER.begin(9600);
+  #endif
+  //PRINTER.setDebugOutput(true);
+  PRINTER.printf("Configured.");
 }
 
 void loop() {
   if (mm.readData()) {
     for (byte i=1; i<4; i++) {
-      Serial1.printf("Power %d: ", i);
-      Serial1.print((long)mm.getPower(i));
-      Serial1.println(" W");
+      PRINTER.printf("Power %d: %ld W\n", i, (long)mm.getPower(i));
     }
-    Serial1.println();
+    PRINTER.println();
     for (byte i=1; i<4; i++) {
-      Serial1.printf("Energy %d (high tarif): ", i);
-      Serial1.print((long)mm.getEnergy(i, TARIF_HIGHT));
-      Serial1.println(" Wh");
-      Serial1.printf("Energy %d (low tarif): ", i);
-      Serial1.print((long)mm.getEnergy(i, TARIF_LOW));
-      Serial1.println(" Wh");
-      Serial1.println();
+      PRINTER.printf("Energy %d (high tarif): %ld kW/h\n", i,
+                     (long)mm.getEnergy(i, TARIF_HIGHT));
+      PRINTER.printf("Energy %d (low tarif): %ld kW/h\n", i,
+                     (long)mm.getEnergy(i, TARIF_LOW));
+      PRINTER.println();
     }
+    PRINTER.printf("Tarif: %s",
+      (mm.getTarif() == TARIF_HIGHT ? "high" : "low"));
+    PRINTER.println();
   }
-  
-  Serial1.printf("Tarif: %s", (mm.getTarif() == TARIF_HIGHT ? "high" : "low"));
-  Serial1.println();
-  Serial1.println("------------------------");
-  delay(5300);
+  PRINTER.println("------------------------");
+  delay(500);
 }

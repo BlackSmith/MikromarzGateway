@@ -13,20 +13,28 @@ MikromarzMeter::MikromarzMeter(meterType type) {
     this->type = type;
 }
 
-//void MikromarzMeter::setup(uint8_t rxPin, uint8_t txPin, uint32_t config, unsigned long bound) {
 void MikromarzMeter::setup(uint8_t rxPin, uint8_t txPin, SerialConfig config, unsigned long bound) {
-    Serial.begin(bound, config);
-    Serial.swap(); 
- // Serial1.begin(bound, config, rxPin, -1, true);
- // Serial2.begin(bound, config, -1, txPin);
+    MM_INPUT_SERIAL.end();
+    pinMode(rxPin, INPUT);
+    pinMode(txPin, OUTPUT);
+    #ifdef ESP8266
+        MM_INPUT_SERIAL.begin(bound, config);
+        MM_INPUT_SERIAL.pins(rxPin, txPin);
+    #elif ESP32
+        #ifndef MM_INVERTOR
+            MM_INPUT_SERIAL.begin(bound, config, rxPin, -1, true);
+            MM_OUTPUT_SERIAL.end();
+            MM_OUTPUT_SERIAL.begin(bound, config, -1, txPin);
+        #else
+            MM_INPUT_SERIAL.begin(bound, config, rxPin, txPin);
+        #endif
+    #endif
 }
 
 bool MikromarzMeter::readData() {
     sendRequest();
-    //if (Serial1.available() > 0) {
-    if (Serial.available() > 0) {
-        //byte num = Serial1.readBytes(record, sizeof(record));
-        byte num = Serial.readBytes(record, sizeof(record));
+    if (MM_INPUT_SERIAL.available() > 0) {
+        byte num = MM_INPUT_SERIAL.readBytes(record, sizeof(record));
         if (num == record[0]) {
             return true;
         }
@@ -55,14 +63,13 @@ tarif MikromarzMeter::getTarif() {
 }
 
 void MikromarzMeter::sendRequest() {
-    //Serial2.write(request, sizeof(request));
-    Serial.write(request, sizeof(request));
+    MM_OUTPUT_SERIAL.write(request, sizeof(request));
     delay(50);
 }
 
 bool  MikromarzMeter::checkPhase(byte phase) {
     if (phase < 1 || phase > 3) {
-        DEBUG_PRINT(F("Phase is out of range (1-3)."));
+        DEBUG_PRINTER.println(F("Phase is out of range (1-3)."));
         return false;
     }
     return true;
