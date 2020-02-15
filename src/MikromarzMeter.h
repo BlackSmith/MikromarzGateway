@@ -3,7 +3,7 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 
-#define MM_INVERTOR "YES"
+#define MM_INVERTER "YES"
 
 // Define where debug output will be printed.
 #ifndef DEBUG_PRINTER
@@ -21,7 +21,7 @@
     #ifdef ESP8266
         #define MM_OUTPUT_SERIAL Serial
     #elif ESP32
-        #ifdef MM_INVERTOR
+        #ifdef MM_INVERTER
             #define MM_OUTPUT_SERIAL Serial1
         #else
             #define MM_OUTPUT_SERIAL Serial2

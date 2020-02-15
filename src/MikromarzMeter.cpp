@@ -21,7 +21,7 @@ void MikromarzMeter::setup(uint8_t rxPin, uint8_t txPin, SerialConfig config, un
         MM_INPUT_SERIAL.begin(bound, config);
         MM_INPUT_SERIAL.pins(rxPin, txPin);
     #elif ESP32
-        #ifndef MM_INVERTOR
+        #ifndef MM_INVERTER
             MM_INPUT_SERIAL.begin(bound, config, rxPin, -1, true);
             MM_OUTPUT_SERIAL.end();
             MM_OUTPUT_SERIAL.begin(bound, config, -1, txPin);
