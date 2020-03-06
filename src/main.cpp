@@ -8,7 +8,7 @@
   #define PRINTER Serial
 #endif
 
-MikromarzMeter mm = MikromarzMeter(SE1_PM2);
+MikromarzMeter mm = MikromarzMeter();
 
 void setup() {
   mm.setup();
@@ -23,20 +23,24 @@ void setup() {
 
 void loop() {
   if (mm.readData()) {
-    for (byte i=1; i<4; i++) {
+    for (byte i=1; i<=NUMBER_PHASES; i++) {
       PRINTER.printf("Power %d: %ld W\n", i, (long)mm.getPower(i));
     }
     PRINTER.println();
-    for (byte i=1; i<4; i++) {
+    for (byte i=1; i<=NUMBER_PHASES; i++) {
       PRINTER.printf("Energy %d (high tarif): %ld kW/h\n", i,
                      (long)mm.getEnergy(i, TARIF_HIGHT));
-      PRINTER.printf("Energy %d (low tarif): %ld kW/h\n", i,
-                     (long)mm.getEnergy(i, TARIF_LOW));
+      #ifdef START_ENERGY_LOW_TARIF
+        PRINTER.printf("Energy %d (low tarif): %ld kW/h\n", i,
+                      (long)mm.getEnergy(i, TARIF_LOW));
+      #endif                      
       PRINTER.println();
     }
-    PRINTER.printf("Tarif: %s",
-      (mm.getTarif() == TARIF_HIGHT ? "high" : "low"));
-    PRINTER.println();
+    #ifdef START_ENERGY_LOW_TARIF
+      PRINTER.printf("Tarif: %s",
+        (mm.getTarif() == TARIF_HIGHT ? "high" : "low"));
+      PRINTER.println();
+    #endif
   }
   PRINTER.println("------------------------");
   delay(500);

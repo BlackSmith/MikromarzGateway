@@ -5,6 +5,7 @@ Tested on ESP8266 (NodeMCU) and ESP32 (ESP-WROOM-32)
 
 Supported MikroMarz devices:
 - [SE1-PM2](https://www.mikromarz.com/www-mikromarz-cz/eshop/51-1-Elektromery/179-2-3-fazove-elektromery/5/690-3-fazovy-2-tarifni-elektromer-SE1-PM2)
+- [SD1_PM1](https://www.mikromarz.com/www-mikromarz-cz/eshop/51-1-Elektromery/0/5/156-Elektromer-SD1-PM1)
 
 
 ### PERUSB:

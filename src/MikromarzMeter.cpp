@@ -2,16 +2,14 @@
 #include <Arduino.h>
 #include <HardwareSerial.h>
 
-byte record[50];  //38 228 0   0 0 0 0 0 0 0 2 0 0 0 2 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0   156 4   # SE1-PM2
+byte record[50];  //38 228  0 0 0 0 0 0 0 0 2 0 0 0 2 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0   156 4   # SE1-PM2
+                  //16 228  0 0 0 0 0 1 0 3 0 0 0 0   169 237    # SD1-PM1 
 
 const byte sizeOfHeader = 2;
 
 const int matrix[4] = {1, 256, 65536, 16777216}; // 256^index
 const byte request[] = {0x0A, 0xE4, 0x00, 0xFF, 0xCE, 0x9F, 0x11, 0x4E, 0x40, 0xAE};
 
-MikromarzMeter::MikromarzMeter(meterType type) {
-    this->type = type;
-}
 
 void MikromarzMeter::setup(uint8_t rxPin, uint8_t txPin, SerialConfig config, unsigned long bound) {
     MM_INPUT_SERIAL.end();
@@ -45,14 +43,18 @@ bool MikromarzMeter::readData() {
 
 uint64_t MikromarzMeter::getPower(byte phase) {
     if (checkPhase(phase)) {
-        return calculate_number(sizeOfHeader + 2*(phase - 1) + 1, 2);    // 3,5,7
+        return calculate_number(sizeOfHeader + 2*(phase - 1) + 1, 2);
     }
     return 0;
 }
 
 uint64_t MikromarzMeter::getEnergy(byte phase, tarif t) {
     if (checkPhase(phase)) {
-        byte offset = sizeOfHeader + (t == TARIF_HIGHT ? 8 : 20);
+        #ifdef START_ENERGY_LOW_TARIF
+            byte offset = sizeOfHeader + (t == TARIF_HIGHT ? START_ENERGY_HIGHT_TARIF : START_ENERGY_LOW_TARIF);
+        #else
+            byte offset = sizeOfHeader + START_ENERGY_HIGHT_TARIF;
+        #endif
         return calculate_number(offset + 4*(phase - 1), 4);
     }
     return 0;
@@ -68,8 +70,8 @@ void MikromarzMeter::sendRequest() {
 }
 
 bool  MikromarzMeter::checkPhase(byte phase) {
-    if (phase < 1 || phase > 3) {
-        DEBUG_PRINTER.println(F("Phase is out of range (1-3)."));
+    if (phase < 1 || phase > NUMBER_PHASES) {
+        DEBUG_PRINTER.println(F("Phase is out of range."));
         return false;
     }
     return true;
@@ -80,5 +82,8 @@ uint64_t MikromarzMeter::calculate_number(byte start, byte size) {
   for (int iLoop=size-1; iLoop>=0; iLoop--) {
     res = res + record[start+iLoop] * matrix[iLoop];
   }
+  #if defined(START_HB) && SIZE_HB == 1
+    res = res + record[START_HB] * 100000000;
+  #endif
   return res;
 }

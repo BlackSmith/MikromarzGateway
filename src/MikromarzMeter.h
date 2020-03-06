@@ -5,6 +5,13 @@
 
 #define MM_INVERTER "YES"
 
+#define TYPE_SE1_PM2 1  // Eletricity - https://www.mikromarz.com/www-mikromarz-cz/eshop/51-1-Elektromery/179-2-3-fazove-elektromery/5/690-3-fazovy-2-tarifni-elektromer-SE1-PM2
+#define TYPE_SD1_PM1 2
+
+// uncomment one of these types
+//#define MM_TYPE TYPE_SE1_PM2
+//#define MM_TYPE TYPE_SD1_PM1
+
 // Define where debug output will be printed.
 #ifndef DEBUG_PRINTER
     #define DEBUG_PRINTER Serial
@@ -55,9 +62,18 @@
     #endif
 #endif
 
-enum meterType {
-    SE1_PM2  // Eletricity - https://www.mikromarz.com/www-mikromarz-cz/eshop/51-1-Elektromery/179-2-3-fazove-elektromery/5/690-3-fazovy-2-tarifni-elektromer-SE1-PM2
-};
+#if MM_TYPE == TYPE_SE1_PM2
+  #define NUMBER_PHASES 3
+  #define START_ENERGY_HIGHT_TARIF 8
+  #define START_ENERGY_LOW_TARIF 20
+#elif MM_TYPE == TYPE_SD1_PM1
+  #define NUMBER_PHASES 1
+  #define START_HB 6  
+  #define SIZE_HB 1
+  #define START_ENERGY_HIGHT_TARIF 7  
+#else
+   #error Unsupported type
+#endif
 
 enum tarif {
     TARIF_LOW,
@@ -66,17 +82,15 @@ enum tarif {
 
 class MikromarzMeter
 {
-public:
-    MikromarzMeter(meterType type);
+public:        
     void setup(uint8_t rxPin=MM_SERIAL_RX_PIN, uint8_t txPin=MM_SERIAL_TX_PIN,
                SerialConfig config=MM_SERIAL_CONFIG, unsigned long bound=MM_SERIAL_BAUD);
     bool readData();
-    uint64_t getPower(byte phase);
+    uint64_t getPower(byte phase);    
     uint64_t getEnergy(byte phase, tarif t=TARIF_HIGHT);
     tarif getTarif();
 private:
-    void sendRequest();
-    meterType type;
+    void sendRequest();    
     uint64_t calculate_number(byte start, byte size);
     bool checkPhase(byte phase);
 };
