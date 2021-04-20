@@ -10,7 +10,7 @@
 
 // uncomment one of these types
 //#define MM_TYPE TYPE_SE1_PM2
-//#define MM_TYPE TYPE_SD1_PM1
+#define MM_TYPE TYPE_SD1_PM1
 
 // Define where debug output will be printed.
 #ifndef DEBUG_PRINTER
@@ -66,11 +66,15 @@
   #define NUMBER_PHASES 3
   #define START_ENERGY_HIGHT_TARIF 8
   #define START_ENERGY_LOW_TARIF 20
+  #define POWER_FACTOR  1       //  Factor for correction incoming data to W
+  #define ENERGY_FACTOR 1       //  Factor for correction incoming data to Wh
 #elif MM_TYPE == TYPE_SD1_PM1
   #define NUMBER_PHASES 1
-  #define START_HB 6  
+  #define START_HB 6
   #define SIZE_HB 1
-  #define START_ENERGY_HIGHT_TARIF 7  
+  #define START_ENERGY_HIGHT_TARIF 7
+  #define POWER_FACTOR  1       //  Factor for correction incoming data to W
+  #define ENERGY_FACTOR 0.1     //  Factor for correction incoming data to Wh
 #else
    #error Unsupported type
 #endif
@@ -82,15 +86,15 @@ enum tarif {
 
 class MikromarzMeter
 {
-public:        
+public:
     void setup(uint8_t rxPin=MM_SERIAL_RX_PIN, uint8_t txPin=MM_SERIAL_TX_PIN,
                SerialConfig config=MM_SERIAL_CONFIG, unsigned long bound=MM_SERIAL_BAUD);
     bool readData();
-    uint64_t getPower(byte phase);    
+    uint64_t getPower(byte phase);
     uint64_t getEnergy(byte phase, tarif t=TARIF_HIGHT);
     tarif getTarif();
 private:
-    void sendRequest();    
+    void sendRequest();
     uint64_t calculate_number(byte start, byte size);
     bool checkPhase(byte phase);
 };

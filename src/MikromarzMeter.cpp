@@ -3,7 +3,7 @@
 #include <HardwareSerial.h>
 
 byte record[50];  //38 228  0 0 0 0 0 0 0 0 2 0 0 0 2 0 0 0 1 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 0   156 4   # SE1-PM2
-                  //16 228  0 0 0 0 0 1 0 3 0 0 0 0   169 237    # SD1-PM1 
+                  //16 228  0 0 0 0 0 1 0 3 0 0 0 0   169 237    # SD1-PM1
 
 const byte sizeOfHeader = 2;
 
@@ -43,7 +43,7 @@ bool MikromarzMeter::readData() {
 
 uint64_t MikromarzMeter::getPower(byte phase) {
     if (checkPhase(phase)) {
-        return calculate_number(sizeOfHeader + 2*(phase - 1) + 1, 2);
+        return calculate_number(sizeOfHeader + 2*(phase - 1) + 1, 2) * POWER_FACTOR;
     }
     return 0;
 }
@@ -55,7 +55,7 @@ uint64_t MikromarzMeter::getEnergy(byte phase, tarif t) {
         #else
             byte offset = sizeOfHeader + START_ENERGY_HIGHT_TARIF;
         #endif
-        return calculate_number(offset + 4*(phase - 1), 4);
+        return calculate_number(offset + 4*(phase - 1), 4) * ENERGY_FACTOR;
     }
     return 0;
 }
