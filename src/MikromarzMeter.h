@@ -10,7 +10,7 @@
 
 // uncomment one of these types
 //#define MM_TYPE TYPE_SE1_PM2
-#define MM_TYPE TYPE_SD1_PM1
+//#define MM_TYPE TYPE_SD1_PM1
 
 // Define where debug output will be printed.
 #ifndef DEBUG_PRINTER
