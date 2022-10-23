@@ -68,7 +68,7 @@
   #define NUMBER_PHASES 3
   #define START_ENERGY_HIGHT_TARIF 8
   #define START_ENERGY_LOW_TARIF 21
-  #define TARIF_INDEX = 33
+  #define TARIF_INDEX 33
   #define POWER_FACTOR  1       //  Factor for correction incoming data to W
   #define ENERGY_FACTOR 1       //  Factor for correction incoming data to Wh
 #elif MM_TYPE == TYPE_SD1_PM1
