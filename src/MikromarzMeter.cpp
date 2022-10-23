@@ -51,9 +51,9 @@ uint64_t MikromarzMeter::getPower(byte phase) {
 uint64_t MikromarzMeter::getEnergy(byte phase, tarif t) {
     if (checkPhase(phase)) {
         #ifdef START_ENERGY_LOW_TARIF
-            byte offset = sizeOfHeader + (t == TARIF_HIGHT ? START_ENERGY_HIGHT_TARIF : START_ENERGY_LOW_TARIF);
+            byte offset = sizeOfHeader + (t == TARIF_HIGH ? START_ENERGY_HIGH_TARIF : START_ENERGY_LOW_TARIF);
         #else
-            byte offset = sizeOfHeader + START_ENERGY_HIGHT_TARIF;
+            byte offset = sizeOfHeader + START_ENERGY_HIGH_TARIF;
         #endif
         return calculate_number(offset + 4*(phase - 1), 4) * ENERGY_FACTOR;
     }
@@ -62,9 +62,9 @@ uint64_t MikromarzMeter::getEnergy(byte phase, tarif t) {
 
 tarif MikromarzMeter::getTarif() {
   #if defined(TARIF_INDEX)
-    return record[TARIF_INDEX] == 0 ? TARIF_HIGHT : TARIF_LOW;
+    return record[TARIF_INDEX] == 0 ? TARIF_HIGH : TARIF_LOW;
   #else
-    return TARIF_HIGHT;
+    return TARIF_HIGH;
   #endif
 }
 

@@ -29,7 +29,7 @@ void loop() {
     PRINTER.println();
     for (byte i=1; i<=NUMBER_PHASES; i++) {
       PRINTER.printf("Energy %d (high tarif): %ld W/h\n", i,
-                     (long)mm.getEnergy(i, TARIF_HIGHT));
+                     (long)mm.getEnergy(i, TARIF_HIGH));
       #ifdef START_ENERGY_LOW_TARIF
         PRINTER.printf("Energy %d (low tarif): %ld W/h\n", i,
                       (long)mm.getEnergy(i, TARIF_LOW));
@@ -38,7 +38,7 @@ void loop() {
     }
     #ifdef START_ENERGY_LOW_TARIF
       PRINTER.printf("Tarif: %s",
-        (mm.getTarif() == TARIF_HIGHT ? "high" : "low"));
+        (mm.getTarif() == TARIF_HIGH ? "high" : "low"));
       PRINTER.println();
     #endif
   }

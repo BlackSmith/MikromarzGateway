@@ -66,7 +66,7 @@
 
 #if MM_TYPE == TYPE_SE1_PM2
   #define NUMBER_PHASES 3
-  #define START_ENERGY_HIGHT_TARIF 8
+  #define START_ENERGY_HIGH_TARIF 8
   #define START_ENERGY_LOW_TARIF 21
   #define TARIF_INDEX 33
   #define POWER_FACTOR  1       //  Factor for correction incoming data to W
@@ -75,7 +75,7 @@
   #define NUMBER_PHASES 1
   #define START_HB 6
   #define SIZE_HB 1
-  #define START_ENERGY_HIGHT_TARIF 7
+  #define START_ENERGY_HIGH_TARIF 7
   #define POWER_FACTOR  1       //  Factor for correction incoming data to W
   #define ENERGY_FACTOR 0.1     //  Factor for correction incoming data to Wh
 #else
@@ -84,7 +84,7 @@
 
 enum tarif {
     TARIF_LOW,
-    TARIF_HIGHT
+    TARIF_HIGH
 };
 
 class MikromarzMeter
@@ -94,7 +94,7 @@ public:
                SerialConfig config=MM_SERIAL_CONFIG, unsigned long bound=MM_SERIAL_BAUD);
     bool readData();
     uint64_t getPower(byte phase);
-    uint64_t getEnergy(byte phase, tarif t=TARIF_HIGHT);
+    uint64_t getEnergy(byte phase, tarif t=TARIF_HIGH);
     tarif getTarif();
 private:
     void sendRequest();
