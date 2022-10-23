@@ -83,8 +83,8 @@
 #endif
 
 enum tarif {
-    TARIF_LOW,
-    TARIF_HIGH
+    TARIF_HIGH,
+    TARIF_LOW
 };
 
 class MikromarzMeter
