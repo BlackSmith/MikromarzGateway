@@ -61,7 +61,11 @@ uint64_t MikromarzMeter::getEnergy(byte phase, tarif t) {
 }
 
 tarif MikromarzMeter::getTarif() {
-    return record[34] == 0 ? TARIF_HIGHT : TARIF_LOW;
+  #if defined(TARIF_INDEX)
+    return record[TARIF_INDEX] == 0 ? TARIF_HIGHT : TARIF_LOW;
+  #else
+    return TARIF_HIGHT;
+  #endif
 }
 
 void MikromarzMeter::sendRequest() {
