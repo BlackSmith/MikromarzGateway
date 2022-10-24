@@ -96,6 +96,7 @@ public:
     uint64_t getPower(byte phase);
     uint64_t getEnergy(byte phase, tarif t=TARIF_HIGH);
     tarif getTarif();
+    byte* getRecord();
 private:
     void sendRequest();
     uint64_t calculate_number(byte start, byte size);

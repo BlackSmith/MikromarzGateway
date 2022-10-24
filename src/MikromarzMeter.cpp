@@ -68,6 +68,10 @@ tarif MikromarzMeter::getTarif() {
   #endif
 }
 
+byte* MikromarzMeter::getRecord() {
+    return record;
+}
+
 void MikromarzMeter::sendRequest() {
     MM_OUTPUT_SERIAL.write(request, sizeof(request));
     delay(50);
